@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      ul li {
+        text-decoration: none;
+        list-style: none;
+      }
+      #content {
+        width: 700px;
+        height: 600px;
+        margin: 0 auto;
+        background-color: rgb(204, 240, 158);
+      }
+      #calendar {
+        background-color: #fff;
+        border: 1px solid #000;
+        width: 490px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      div.header {
+        text-align: center;
+        display: flex;
+        justify-content: space-around;
+        margin: 20px 0;
+      }
+      #next,
+      #previous {
+        cursor: pointer;
+      }
+      #next:hover,
+      #previous:hover {
+        color: rgb(68, 65, 214);
+      }
+      #month {
+        margin: 20px 0;
+      }
+      ul#week {
+        display: flex;
+      }
+      #week > li {
+        flex-basis: 70px;
+        padding: 3px 0;
+        background-color: #ddd;
+      }
+      ul#days {
+        display: flex;
+        justify-content: start;
+        flex-wrap: wrap;
+      }
+      #days > li {
+        padding: 18px;
+        flex-basis: 70px;
+        box-sizing: border-box;
+      }
+      #days > li:hover {
+        background-color: rgb(125, 203, 240);
+      }
+      .active {
+        background-color: rgb(230, 124, 124);
+      }
+      .expect {
+        color: rgba(197, 194, 194, 0.945);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content">
+      <div id="calendar">
+        <div class="header">
+          <span id="previous"><<上个月</span>
+          <span id="year">1999</span>
+          <span id="next">下个月>></span>
+        </div>
+        <div id="month">***</div>
+        <ul id="week">
+          <li>日</li>
+          <li>一</li>
+          <li>二</li>
+          <li>三</li>
+          <li>四</li>
+          <li>五</li>
+          <li>六</li>
+        </ul>
+        <ul id="days"></ul>
+      </div>
+    </div>
+
+    <script>
+      // 当前时间对象实例
+      let now = new Date();
+      let cYear = now.getFullYear();
+      let cMonth = now.getMonth();
+      let ul_days = document.getElementById("days");
+      show(now, cYear, cMonth);
+
+      let next = document.getElementById("next");
+      next.addEventListener("click", function () {
+        if (cMonth >= 11) {
+          return;
+        }
+        ul_days.innerHTML = "";
+        show(now, cYear, ++cMonth);
+      });
+      let pre = document.getElementById("previous");
+      pre.addEventListener("click", function () {
+        if (cMonth <= 0) {
+          return;
+        }
+        ul_days.innerHTML = "";
+        show(now, cYear, --cMonth);
+      });
+
+      function show(now, year, month) {
+        // 当前月份的天数(最后一天)
+        let days = getMonthDay(year, month);
+
+        // 方法以数字（0-6）返回日期的星期名（weekday
+        //一周的第一天（0）表示 “星期日”
+        //当月的第一天是星期几
+        let day = new Date(year, month, 1).getDay();
+        console.log("当月第一天星期" + day);
+        // console.log(now.getMonth());
+
+        // 上个月的天数
+        let last_month_days = getMonthDay(year, month - 1);
+        // console.log(last_days);
+
+        let start_day = last_month_days - day + 1;
+
+        for (let i = 0; i < day; i++) {
+          ul_days.innerHTML += `<li class="expect"> ${start_day++}</li>`;
+        }
+
+        for (let i = 1; i <= days; i++) {
+          if (
+            i == now.getDate() &&
+            year == now.getFullYear() &&
+            month == now.getMonth()
+          ) {
+            ul_days.innerHTML += `<li class="active">${i}</li>`;
+          } else {
+            ul_days.innerHTML += `<li>${i}</li>`;
+          }
+        }
+
+        // 计算最后一天星期几
+        let month_last_day = new Date(year, month, days).getDay();
+        // console.log(month_last_day);
+        let rest = 6 - month_last_day;
+        for (let i = 1; i <= rest; i++) {
+          ul_days.innerHTML += `<li class="expect">${i}</li>`;
+        }
+
+        //当年 当月
+        document.getElementById("year").innerHTML = year;
+        document.getElementById("month").innerHTML = month + 1 + "月";
+      }
+
+      // 计算一个月的天数(一个月的最后一天是多少号)
+      function getMonthDay(year, month) {
+        // JavaScript 从 0 到 11 计算月份,所以第二个参数要加1
+        let days = new Date(year, month + 1, 0).getDate();
+        return days;
+      }
+    </script>
+  </body>
+</html>
